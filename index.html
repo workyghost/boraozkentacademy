@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="tr" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Opsiyon İşlemleri 101 — Bora Özkent Academy</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f8fafc',
+              100: '#f1f5f9',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              900: '#1e3a8a',
+              950: '#172554',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-balance {
+        text-wrap: balance;
+      }
+      .perspective-1000 {
+        perspective: 1000px;
+      }
+      .transform-style-3d {
+        transform-style: preserve-3d;
+      }
+      .backface-hidden {
+        backface-visibility: hidden;
+      }
+      .rotate-y-180 {
+        transform: rotateY(180deg);
+      }
+    }
+    
+    .glass-nav {
+      @apply bg-white/80 dark:bg-slate-950/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800;
+    }
+    
+    .toc-link {
+      @apply block py-2 px-4 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-brand-600 dark:hover:text-brand-500 transition-colors font-medium text-sm;
+    }
+    
+    .toc-link.active {
+      @apply bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-500 font-semibold;
+    }
+    
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Flip Card Styles */
+    .flip-card-inner {
+      transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+    }
+    /* Touch device support for flip cards */
+    @media (hover: none) {
+      .flip-card-container.is-flipped .flip-card-inner {
+        transform: rotateY(180deg);
+      }
+    }
+  </style>
+
+  <script>
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  </script>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300 font-sans antialiased selection:bg-brand-500/30">
+
+  <!-- Progress Bar -->
+  <div id="progress-bar" class="fixed top-0 left-0 h-1 bg-gradient-to-r from-brand-500 to-indigo-600 z-[60] w-0 transition-all duration-150"></div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 glass-nav transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="#" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-indigo-600 flex items-center justify-center text-white font-bold font-serif shadow-sm">B</div>
+          <span class="font-serif font-semibold text-xl tracking-tight text-slate-900 dark:text-white">Bora Özkent <span class="font-light">Academy</span></span>
+          <span class="text-[10px] px-1.5 py-0.5 font-mono font-medium rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200/60 dark:border-slate-700/60 align-middle">v1.0.0</span>
+        </a>
+        
+        <!-- Theme Toggle -->
+        <button id="theme-toggle" class="p-2.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Toggle Dark Mode">
+          <!-- Sun Icon -->
+          <svg id="icon-sun" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+          <!-- Moon Icon -->
+          <svg id="icon-moon" class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Background Image (Faint/Large) -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden flex justify-start">
+    <div class="w-full lg:w-1/2 h-full relative opacity-40 grayscale contrast-110 transition-opacity duration-700">
+      <img src="bora.jpg" alt="Bora Özkent" class="w-full h-full object-cover object-top">
+      <!-- Right fade-out gradient (fading into the content on the right) -->
+      <div class="absolute inset-0 bg-gradient-to-l from-slate-50 via-slate-50/40 to-transparent dark:from-slate-950 dark:via-slate-950/40"></div>
+      <!-- Bottom fade-out gradient -->
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-50 dark:to-slate-950"></div>
+    </div>
+  </div>
+
+  <div class="relative z-10">
+  <!-- Mobile Nav (Horizontal Scroll) -->
+  <nav class="lg:hidden border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur sticky top-16 z-40">
+    <ul class="flex overflow-x-auto px-4 py-3 gap-2 hide-scrollbar">
+      <li><a href="#ders-1" class="toc-link whitespace-nowrap active" data-target="ders-1">1. Opsiyon Nedir?</a></li>
+      <li><a href="#ders-2" class="toc-link whitespace-nowrap" data-target="ders-2">2. Call & Put</a></li>
+      <li><a href="#ders-3" class="toc-link whitespace-nowrap" data-target="ders-3">3. Strike Price</a></li>
+      <li><a href="#ders-4" class="toc-link whitespace-nowrap" data-target="ders-4">4. Vade</a></li>
+      <li><a href="#ders-5" class="toc-link whitespace-nowrap" data-target="ders-5">5. Prim</a></li>
+    </ul>
+  </nav>
+
+  <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 lg:py-16 flex flex-col lg:flex-row gap-12 lg:gap-20 relative">
+    
+    <!-- Sidebar -->
+    <aside class="hidden lg:block w-72 shrink-0">
+      <div class="sticky top-28">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-6 px-4">İçindekiler</h4>
+        <nav class="space-y-1 relative border-l border-slate-200 dark:border-slate-800 ml-4 pl-4">
+          <a href="#ders-1" class="toc-link active" data-target="ders-1">1. Opsiyon Nedir?</a>
+          <a href="#ders-2" class="toc-link" data-target="ders-2">2. Call & Put Opsiyonları</a>
+          <a href="#ders-3" class="toc-link" data-target="ders-3">3. Strike Price (Kullanım Fiyatı)</a>
+          <a href="#ders-4" class="toc-link" data-target="ders-4">4. Opsiyon Vadesi & Zaman</a>
+          <a href="#ders-5" class="toc-link" data-target="ders-5">5. Opsiyon Primi & Grekler</a>
+        </nav>
+        
+        <div class="mt-12 p-6 rounded-2xl bg-white/40 dark:bg-slate-900/40 backdrop-blur-md border border-slate-200 dark:border-slate-700 shadow-sm">
+          <h5 class="font-serif font-bold text-slate-900 dark:text-white mb-2">Eğitim Hedefi</h5>
+          <p class="text-sm text-slate-600 dark:text-slate-400">Karmaşık finans dünyasını 5 kısa derste, günlük hayattan örneklerle öğrenin. İçerik Bora Özkent'in anlatımından alınmıştır.</p>
+          <div class="mt-4 pt-4 border-t border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
+            <span>Sürüm (Version)</span>
+            <span class="font-mono bg-slate-200/50 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-600 dark:text-slate-400 font-semibold border border-slate-200 dark:border-slate-700">v1.0.0</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Content -->
+    <main class="flex-1 min-w-0 pb-20">
+      
+      <!-- Hero Section -->
+      <section class="mb-20 pb-16 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex flex-col gap-8">
+          <div class="max-w-4xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-400 text-sm font-medium mb-6">
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+              </span>
+              Premium Finans Eğitimi
+            </div>
+            <h1 class="text-6xl lg:text-8xl font-serif font-bold text-slate-900 dark:text-white leading-[1.05] mb-8 text-balance">
+              Opsiyon İşlemlerini <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-600 dark:from-brand-400 dark:to-indigo-400">Herkes Anlayabilir.</span>
+            </h1>
+            <p class="text-xl lg:text-2xl text-slate-600 dark:text-slate-400 leading-relaxed mb-8">
+              Bireyleri ve kurumları geleceğe hazırlayan eğitim platformumuza hoş geldiniz. Sadece hisse senedi almak zorunda değilsiniz. Opsiyonların sunduğu fırsatları ve riskleri en temel düzeyden başlayarak öğrenin.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div class="space-y-32">
+        <!-- DERS 1 -->
+        <section id="ders-1" class="scroll-mt-28 lesson-section">
+          <div class="flex items-center gap-4 mb-6">
+            <span class="flex items-center justify-center w-10 h-10 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-lg">1</span>
+            <h2 class="text-3xl lg:text-4xl font-serif font-bold text-slate-900 dark:text-white">Opsiyon Nedir?</h2>
+          </div>
+          
+          <div class="p-6 mb-10 bg-slate-100 dark:bg-slate-800/50 rounded-2xl border-l-4 border-brand-500">
+            <h3 class="font-bold text-brand-700 dark:text-brand-400 mb-2">Konu Özeti</h3>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+              Bu derste, opsiyonların ne anlama geldiği, hisse senediyle arasındaki temel farklar ve opsiyon alıcısı ile satıcısı arasındaki rollerin mekaniği açıklanmaktadır.
+            </p>
+          </div>
+
+          <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+            Kilit Kavramlar (Etkileşimli Kartlar)
+          </h3>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
+            <!-- Flip Card 1 -->
+            <div class="flip-card-container group perspective-1000 h-40 cursor-pointer" onclick="this.classList.toggle('is-flipped')">
+              <div class="flip-card-inner relative w-full h-full transform-style-3d md:group-hover:rotate-y-180">
+                <!-- Front -->
+                <div class="absolute inset-0 backface-hidden flex items-center justify-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                  <h4 class="font-bold text-xl text-slate-900 dark:text-white">Opsiyon</h4>
+                </div>
+                <!-- Back -->
+                <div class="absolute inset-0 backface-hidden rotate-y-180 flex items-center justify-center p-6 bg-brand-600 dark:bg-brand-700 text-white rounded-2xl shadow-lg">
+                  <p class="text-sm text-center leading-relaxed font-medium">Borsada işlem gören bir varlığı (örneğin hisse senedini) belirli bir fiyattan, belirli bir tarihe kadar alma veya satma <span class="underline">hakkı</span> veren türev bir sözleşmedir.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flip Card 2 -->
+            <div class="flip-card-container group perspective-1000 h-40 cursor-pointer" onclick="this.classList.toggle('is-flipped')">
+              <div class="flip-card-inner relative w-full h-full transform-style-3d md:group-hover:rotate-y-180">
+                <div class="absolute inset-0 backface-hidden flex flex-col items-center justify-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                  <h4 class="font-bold text-xl text-slate-900 dark:text-white">Prim</h4>
+                </div>
+                <div class="absolute inset-0 backface-hidden rotate-y-180 flex items-center justify-center p-6 bg-brand-600 dark:bg-brand-700 text-white rounded-2xl shadow-lg">
+                  <p class="text-sm text-center leading-relaxed font-medium">Opsiyon sözleşmesini (hakkını) satın alırken ödenen bedeldir. Alıcının maksimum riski bu tutarla sınırlıdır.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flip Card 3 -->
+            <div class="flip-card-container group perspective-1000 h-40 cursor-pointer" onclick="this.classList.toggle('is-flipped')">
+              <div class="flip-card-inner relative w-full h-full transform-style-3d md:group-hover:rotate-y-180">
+                <div class="absolute inset-0 backface-hidden flex items-center justify-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                  <h4 class="font-bold text-xl text-slate-900 dark:text-white">Alıcı</h4>
+                </div>
+                <div class="absolute inset-0 backface-hidden rotate-y-180 flex items-center justify-center p-6 bg-brand-600 dark:bg-brand-700 text-white rounded-2xl shadow-lg">
+                  <p class="text-sm text-center leading-relaxed font-medium">Belirli bir fiyattan alma/satma hakkını <span class="underline">satın alan</span> kişidir. Primi öder. Hakkını kullanıp kullanmamakta serbesttir (mecburiyeti yoktur).</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flip Card 4 -->
+            <div class="flip-card-container group perspective-1000 h-40 cursor-pointer" onclick="this.classList.toggle('is-flipped')">
+              <div class="flip-card-inner relative w-full h-full transform-style-3d md:group-hover:rotate-y-180">
+                <div class="absolute inset-0 backface-hidden flex items-center justify-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                  <h4 class="font-bold text-xl text-slate-900 dark:text-white">Satıcı</h4>
+                </div>
+                <div class="absolute inset-0 backface-hidden rotate-y-180 flex items-center justify-center p-6 bg-brand-600 dark:bg-brand-700 text-white rounded-2xl shadow-lg">
+                  <p class="text-sm text-center leading-relaxed font-medium">Hakları satan kişidir. Primi peşin alır. Ancak alıcı hakkını kullanmak isterse, satıcı yükümlülüğünü yerine getirmek <span class="underline">zorundadır</span>.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="prose prose-lg prose-slate dark:prose-invert max-w-none mb-10">
+            <h3>Detaylı Açıklama</h3>
+            <p>
+              Opsiyonlar, bir hisse senedine sahip olma zorunluluğu getirmeden, gelecekteki bir fiyat hareketi üzerinden kâr sağlama fırsatı sunar. Hisse senedi aldığınızda şirketin bir parçası (ortağı) olursunuz; fiyat düşerse sermayenizin tamamını kaybetme riski vardır. Opsiyonda ise sadece bir <strong>"hak"</strong> satın alırsınız ve ödediğiniz prim dışında bir riskiniz yoktur.
+            </p>
+            <p>
+              Genel olarak 1 opsiyon kontratı borsada <strong>100 adet hisseyi</strong> temsil eder. Piyasada opsiyon alıcısı (buyer) ile satıcısı (writer) arasında her zaman ters bir ilişki ve yükümlülük vardır. Alıcı, aldığı bu hakkı dilerse kullanır dilerse kullanmaz; ancak satıcı primi aldığı için alıcının talebini yerine getirmekle yükümlüdür.
+            </p>
+          </div>
+
+          <div class="relative p-8 rounded-3xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <div class="relative z-10">
+              <h4 class="font-bold text-xl text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                🏠 Gerçek Hayat Örneği
+              </h4>
+              <p class="text-slate-700 dark:text-slate-300 leading-relaxed">Diyelim ki bir ev beğendiniz ve değeri 5 Milyon TL. Ancak elinizde şu an o kadar nakit yok, bir ay sonra gelecek. Ev sahibine gidip <em>"Bana bu evi 1 ay boyunca 5 Milyon TL'ye alma hakkı ver, bunun karşılığında sana 50.000 TL ödeyeyim (opsiyon primi)"</em> diyorsunuz. </p>
+              <ul class="list-disc pl-5 mt-4 space-y-2 text-slate-700 dark:text-slate-300">
+                <li>Bir ay içinde o bölgeden metro geçeceği açıklanır ve evin değeri 7 Milyon TL'ye çıkarsa; siz anlaşmanız gereği o evi 5 Milyon TL'ye alır, anında 7 Milyon'a satarak büyük kâr edersiniz.</li>
+                <li>Eğer bölgenin değeri düşerse, evi almaktan vazgeçersiniz. Ev sahibine ödediğiniz 50.000 TL yanar, ancak milyonlarca lira zarar etmekten kurtulursunuz.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <hr class="border-slate-200 dark:border-slate-800">
+
+        <!-- DERS 2 -->
+        <section id="ders-2" class="scroll-mt-28 lesson-section">
+          <div class="flex items-center gap-4 mb-6">
+            <span class="flex items-center justify-center w-10 h-10 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-lg">2</span>
+            <h2 class="text-3xl lg:text-4xl font-serif font-bold text-slate-900 dark:text-white">Call & Put Opsiyonları</h2>
+          </div>
+          
+          <div class="p-6 mb-10 bg-slate-100 dark:bg-slate-800/50 rounded-2xl border-l-4 border-emerald-500">
+            <h3 class="font-bold text-emerald-700 dark:text-emerald-400 mb-2">Konu Özeti</h3>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+              Piyasanın yönüne dair beklentilerinize göre kullanılan iki temel opsiyon türü (Call ve Put) işlenmektedir. Yükseliş beklentisinde Call, düşüş beklentisinde Put stratejileri kullanılır.
+            </p>
+          </div>
+
+          <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+            Kilit Kavramlar
+          </h3>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
+            <!-- Flip Card 1 -->
+            <div class="flip-card-container group perspective-1000 h-40 cursor-pointer" onclick="this.classList.toggle('is-flipped')">
+              <div class="flip-card-inner relative w-full h-full transform-style-3d md:group-hover:rotate-y-180">
+                <div class="absolute inset-0 backface-hidden flex items-center justify-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                  <h4 class="font-bold text-xl text-slate-900 dark:text-white">Call (Alım) Opsiyonu</h4>
+                </div>
+                <div class="absolute inset-0 backface-hidden rotate-y-180 flex items-center justify-center p-6 bg-emerald-600 dark:bg-emerald-700 text-white rounded-2xl shadow-lg">
+                  <p class="text-sm text-center leading-relaxed font-medium">Bir hisseyi gelecekte belirli bir fiyattan <strong>satın alma</strong> hakkıdır. Alıcı, fiyatın yükseleceğini ("Boğa/Bull" piyasası) öngörür.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flip Card 2 -->
+            <div class="flip-card-container group perspective-1000 h-40 cursor-pointer" onclick="this.classList.toggle('is-flipped')">
+              <div class="flip-card-inner relative w-full h-full transform-style-3d md:group-hover:rotate-y-180">
+                <div class="absolute inset-0 backface-hidden flex items-center justify-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                  <h4 class="font-bold text-xl text-slate-900 dark:text-white">Put (Satım) Opsiyonu</h4>
+                </div>
+                <div class="absolute inset-0 backface-hidden rotate-y-180 flex items-center justify-center p-6 bg-rose-600 dark:bg-rose-700 text-white rounded-2xl shadow-lg">
+                  <p class="text-sm text-center leading-relaxed font-medium">Bir hisseyi gelecekte belirli bir fiyattan <strong>satma</strong> hakkıdır. Alıcı, fiyatın düşeceğini ("Ayı/Bear" piyasası) öngörür.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="prose prose-lg prose-slate dark:prose-invert max-w-none mb-10">
+            <h3>Detaylı Açıklama</h3>
+            <p>İki tarafın beklentileri her zaman zıttır: Call alıcısı fiyatın yükselmesini isterken satıcısı yükselmemesini ister; Put alıcısı fiyatın düşmesini isterken satıcısı fiyatın sabit kalmasını veya artmasını talep eder.</p>
+            <p>Opsiyonlar sadece spekülatif günlük al-sat aracı değildir; uzun vadeli portföylerde vergi ödemeden yüksek değerdeki hisseyi piyasadaki ani çöküşlerden korumak için, sigorta poliçesi gibi "Put" opsiyonu satın alınabilir.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="p-8 rounded-3xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+              <h4 class="font-bold text-xl text-slate-900 dark:text-white mb-4 flex items-center gap-2">📈 Call Örneği</h4>
+              <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-sm">İleride uçak biletlerinin pahalanacağını düşünüp, aylar öncesinden uçak rezervasyonu yaparak çok küçük bir rezervasyon ücreti karşılığında düşük bilet fiyatını sabitlemek, Call opsiyonunun gündelik hayattaki tam karşılığıdır.</p>
+            </div>
+            <div class="p-8 rounded-3xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+              <h4 class="font-bold text-xl text-slate-900 dark:text-white mb-4 flex items-center gap-2">🛡️ Put Örneği (Kasko)</h4>
+              <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-sm">Arabanıza kasko (sigorta) yaptırmak tam bir Put opsiyonudur. Arabanız kaza yapıp değer kaybederse sigorta bu zararı telafi eder. Eğer araba kaza yapmazsa poliçeyi kullanmazsınız ve yalnızca ödediğiniz sigorta primi kadar masrafınız olur.</p>
+            </div>
+          </div>
+        </section>
+
+        <hr class="border-slate-200 dark:border-slate-800">
+
+        <!-- DERS 3 -->
+        <section id="ders-3" class="scroll-mt-28 lesson-section">
+          <div class="flex items-center gap-4 mb-6">
+            <span class="flex items-center justify-center w-10 h-10 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-lg">3</span>
+            <h2 class="text-3xl lg:text-4xl font-serif font-bold text-slate-900 dark:text-white">Strike Price (Kullanım Fiyatı)</h2>
+          </div>
+          
+          <div class="p-6 mb-10 bg-slate-100 dark:bg-slate-800/50 rounded-2xl border-l-4 border-indigo-500">
+            <h3 class="font-bold text-indigo-700 dark:text-indigo-400 mb-2">Konu Özeti</h3>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+              Bu ders, sözleşmedeki hedef fiyat olan "Kullanım Fiyatını" ve anlık piyasa fiyatıyla bu fiyat arasındaki farkların opsiyonun kâr/zarar durumunu (ITM, OTM, ATM) nasıl belirlediğini detaylandırır.
+            </p>
+          </div>
+
+          <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+            Kilit Kavramlar
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <!-- Flip Card 1 -->
+            <div class="flip-card-container group perspective-1000 h-48 cursor-pointer" onclick="this.classList.toggle('is-flipped')">
+              <div class="flip-card-inner relative w-full h-full transform-style-3d md:group-hover:rotate-y-180">
+                <div class="absolute inset-0 backface-hidden flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-900 border-2 border-emerald-500/30 rounded-2xl shadow-sm text-center">
+                  <div class="text-emerald-600 dark:text-emerald-400 font-bold mb-2">ITM</div>
+                  <h4 class="font-bold text-slate-900 dark:text-white">In the Money (Kârda)</h4>
+                </div>
+                <div class="absolute inset-0 backface-hidden rotate-y-180 flex items-center justify-center p-6 bg-emerald-600 dark:bg-emerald-700 text-white rounded-2xl shadow-lg">
+                  <p class="text-sm text-center font-medium">Opsiyonun kârlı bölgede olmasıdır. Örneğin; 100$ strike Call'unuz var ve hisse anlık 120$ ise ITM durumundasınız demektir.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flip Card 2 -->
+            <div class="flip-card-container group perspective-1000 h-48 cursor-pointer" onclick="this.classList.toggle('is-flipped')">
+              <div class="flip-card-inner relative w-full h-full transform-style-3d md:group-hover:rotate-y-180">
+                <div class="absolute inset-0 backface-hidden flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 rounded-2xl shadow-sm text-center">
+                  <div class="text-slate-600 dark:text-slate-400 font-bold mb-2">ATM</div>
+                  <h4 class="font-bold text-slate-900 dark:text-white">At the Money (Başa Baş)</h4>
+                </div>
+                <div class="absolute inset-0 backface-hidden rotate-y-180 flex items-center justify-center p-6 bg-slate-600 dark:bg-slate-700 text-white rounded-2xl shadow-lg">
+                  <p class="text-sm text-center font-medium">Kullanım fiyatı ile piyasa fiyatının tam olarak eşit olduğu noktadır.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flip Card 3 -->
+            <div class="flip-card-container group perspective-1000 h-48 cursor-pointer" onclick="this.classList.toggle('is-flipped')">
+              <div class="flip-card-inner relative w-full h-full transform-style-3d md:group-hover:rotate-y-180">
+                <div class="absolute inset-0 backface-hidden flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-900 border-2 border-rose-500/30 rounded-2xl shadow-sm text-center">
+                  <div class="text-rose-600 dark:text-rose-400 font-bold mb-2">OTM</div>
+                  <h4 class="font-bold text-slate-900 dark:text-white">Out of Money (Zararda)</h4>
+                </div>
+                <div class="absolute inset-0 backface-hidden rotate-y-180 flex items-center justify-center p-6 bg-rose-600 dark:bg-rose-700 text-white rounded-2xl shadow-lg">
+                  <p class="text-sm text-center font-medium">Kullanımının anlamsız olduğu bölgedir. 100$ strike Call aldınız ancak fiyat piyasada 80$. Opsiyon şu an OTM'dir.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="prose prose-lg prose-slate dark:prose-invert max-w-none mb-10">
+            <h3>Detaylı Açıklama</h3>
+            <p>
+              Kullanım fiyatı tüm kazanç hesaplamalarınızın başlangıç noktasıdır ve piyasa koşullarından tamamen bağımsızdır; baştan sözleşmeye yazılan net rakamdır. Çok kısa vadeli ITM opsiyonlar, doğrudan kârlı oldukları için genelde pahalıdır ve bunlardan yüksek getiri yüzdeleri yakalamak zor olabilir.
+            </p>
+            <p>
+              Özellikle uzun vadeli stratejilerde, yatırımcılar primleri ucuz olduğu için OTM (zararda) opsiyonlar alırlar çünkü zamanla fiyatın o hedefe ulaşacağına güvenirler.
+            </p>
+          </div>
+        </section>
+
+        <hr class="border-slate-200 dark:border-slate-800">
+
+        <!-- DERS 4 -->
+        <section id="ders-4" class="scroll-mt-28 lesson-section">
+          <div class="flex items-center gap-4 mb-6">
+            <span class="flex items-center justify-center w-10 h-10 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-lg">4</span>
+            <h2 class="text-3xl lg:text-4xl font-serif font-bold text-slate-900 dark:text-white">Opsiyon Vadesi & Zaman Etkisi</h2>
+          </div>
+          
+          <div class="p-6 mb-10 bg-slate-100 dark:bg-slate-800/50 rounded-2xl border-l-4 border-amber-500">
+            <h3 class="font-bold text-amber-700 dark:text-amber-400 mb-2">Konu Özeti</h3>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+              Opsiyonların hisse senedi gibi sonsuza dek tutulabilen varlıklar olmadığını, zamana karşı (Time Decay) nasıl yarışıldığını ve vadelerin kârlılık stratejisine etkisini açıklar.
+            </p>
+          </div>
+
+          <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+            Kilit Kavramlar
+          </h3>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
+            <!-- Flip Card 1 -->
+            <div class="flip-card-container group perspective-1000 h-40 cursor-pointer" onclick="this.classList.toggle('is-flipped')">
+              <div class="flip-card-inner relative w-full h-full transform-style-3d md:group-hover:rotate-y-180">
+                <div class="absolute inset-0 backface-hidden flex items-center justify-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                  <h4 class="font-bold text-xl text-slate-900 dark:text-white">Vade (Expiration Date)</h4>
+                </div>
+                <div class="absolute inset-0 backface-hidden rotate-y-180 flex items-center justify-center p-6 bg-amber-600 dark:bg-amber-700 text-white rounded-2xl shadow-lg">
+                  <p class="text-sm text-center leading-relaxed font-medium">Sözleşmenin ömrünün son bulduğu tarihtir. O gün bittiğinde opsiyonun değeri sıfırlanır.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flip Card 2 -->
+            <div class="flip-card-container group perspective-1000 h-40 cursor-pointer" onclick="this.classList.toggle('is-flipped')">
+              <div class="flip-card-inner relative w-full h-full transform-style-3d md:group-hover:rotate-y-180">
+                <div class="absolute inset-0 backface-hidden flex items-center justify-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                  <h4 class="font-bold text-xl text-slate-900 dark:text-white">Time Decay (Zaman Erimesi)</h4>
+                </div>
+                <div class="absolute inset-0 backface-hidden rotate-y-180 flex items-center justify-center p-6 bg-amber-600 dark:bg-amber-700 text-white rounded-2xl shadow-lg">
+                  <p class="text-sm text-center leading-relaxed font-medium">Hisse fiyatı yerinde saysa bile, vade sonu yaklaştıkça sözleşmenin her gün otomatik olarak değer kaybetmesidir.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="prose prose-lg prose-slate dark:prose-invert max-w-none mb-10">
+            <h3>Detaylı Açıklama</h3>
+            <p>
+              Opsiyon yatırımında adeta zamana karşı bir yarış verirsiniz. Kısa vadeli opsiyonlar oldukça ucuzdur ancak hedefe ulaşma şansları düşük olduğu için paranın tamamen sıfırlanma ihtimali yüksektir. Diğer yandan, 1 ila 3 yıl vadeli opsiyonların primleri çok daha pahalıdır ancak zaman faktörü, hisse fiyatının lehinize dönmesi için size imkân ve esneklik tanır.
+            </p>
+          </div>
+
+          <div class="relative p-8 rounded-3xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <div class="relative z-10">
+              <h4 class="font-bold text-xl text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                🎟️ Gerçek Hayat Örneği: Konser Bileti
+              </h4>
+              <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+                Opsiyon vadesi bir konser biletine veya süte benzetilebilir. Konsere 6 ay varken biletiniz çok değerlidir; programınızı esnek tutabilirsiniz, gerekirse başkasına satabilirsiniz. Ancak konserin başlamasına sadece 1 saat kalmışsa o bileti elden çıkarmak çok zordur; konsere gitmezseniz bilet çöpe gider (değeri sıfırlanır).
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <hr class="border-slate-200 dark:border-slate-800">
+
+        <!-- DERS 5 -->
+        <section id="ders-5" class="scroll-mt-28 lesson-section">
+          <div class="flex items-center gap-4 mb-6">
+            <span class="flex items-center justify-center w-10 h-10 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-lg">5</span>
+            <h2 class="text-3xl lg:text-4xl font-serif font-bold text-slate-900 dark:text-white">Opsiyon Primi & Grekler</h2>
+          </div>
+          
+          <div class="p-6 mb-10 bg-slate-100 dark:bg-slate-800/50 rounded-2xl border-l-4 border-blue-500">
+            <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2">Konu Özeti</h3>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+              Bir opsiyon sözleşmesi için ödenen paranın (primin) arka planında yatan faktörler ele alınır. Oynaklık (volatilite), vade ve içsel/dışsal değer kavramlarıyla birlikte fiyatlandırma indikatörlerine (Grekler) giriş yapılır.
+            </p>
+          </div>
+
+          <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+            Kilit Kavramlar
+          </h3>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+            <div class="flip-card-container group perspective-1000 h-48 cursor-pointer" onclick="this.classList.toggle('is-flipped')">
+              <div class="flip-card-inner relative w-full h-full transform-style-3d md:group-hover:rotate-y-180">
+                <div class="absolute inset-0 backface-hidden flex items-center justify-center p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm text-center">
+                  <h4 class="font-bold text-slate-900 dark:text-white">İçsel Değer<br><span class="text-xs text-slate-400 font-normal">(Intrinsic Value)</span></h4>
+                </div>
+                <div class="absolute inset-0 backface-hidden rotate-y-180 flex items-center justify-center p-4 bg-blue-600 dark:bg-blue-700 text-white rounded-2xl shadow-lg">
+                  <p class="text-xs text-center font-medium">Hissenin anlık piyasa fiyatı ile opsiyon sözleşmesindeki kullanım fiyatı arasındaki net kâr farkıdır.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card-container group perspective-1000 h-48 cursor-pointer" onclick="this.classList.toggle('is-flipped')">
+              <div class="flip-card-inner relative w-full h-full transform-style-3d md:group-hover:rotate-y-180">
+                <div class="absolute inset-0 backface-hidden flex items-center justify-center p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm text-center">
+                  <h4 class="font-bold text-slate-900 dark:text-white">Dışsal Değer<br><span class="text-xs text-slate-400 font-normal">(Extrinsic Value)</span></h4>
+                </div>
+                <div class="absolute inset-0 backface-hidden rotate-y-180 flex items-center justify-center p-4 bg-blue-600 dark:bg-blue-700 text-white rounded-2xl shadow-lg">
+                  <p class="text-xs text-center font-medium">Gelecek potansiyeli için ödenen miktar. Zaman ve volatilite ile oluşur, vade sonunda tamamen sıfırlanır.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flip-card-container group perspective-1000 h-48 cursor-pointer" onclick="this.classList.toggle('is-flipped')">
+              <div class="flip-card-inner relative w-full h-full transform-style-3d md:group-hover:rotate-y-180">
+                <div class="absolute inset-0 backface-hidden flex items-center justify-center p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm text-center">
+                  <h4 class="font-bold text-slate-900 dark:text-white">Volatilite<br><span class="text-xs text-slate-400 font-normal">(Oynaklık)</span></h4>
+                </div>
+                <div class="absolute inset-0 backface-hidden rotate-y-180 flex items-center justify-center p-4 bg-blue-600 dark:bg-blue-700 text-white rounded-2xl shadow-lg">
+                  <p class="text-xs text-center font-medium">Hissenin fiyatının ne kadar agresif veya stabil hareket edeceğine dair oluşan piyasa beklentisidir.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card-container group perspective-1000 h-48 cursor-pointer" onclick="this.classList.toggle('is-flipped')">
+              <div class="flip-card-inner relative w-full h-full transform-style-3d md:group-hover:rotate-y-180">
+                <div class="absolute inset-0 backface-hidden flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm text-center">
+                  <h4 class="font-bold text-slate-900 dark:text-white">Grekler</h4>
+                </div>
+                <div class="absolute inset-0 backface-hidden rotate-y-180 flex items-center justify-center p-4 bg-blue-600 dark:bg-blue-700 text-white rounded-2xl shadow-lg">
+                  <p class="text-xs text-center font-medium">Delta (Fiyata duyarlılık), Teta (Zamana duyarlılık) ve Vega (Oynaklığa duyarlılık) gibi matematsel risk araçlarıdır.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="prose prose-lg prose-slate dark:prose-invert max-w-none mb-10">
+            <h3>Detaylı Açıklama</h3>
+            <p>
+              Bir opsiyonun primini belirleyen dört ana faktör vardır: Hissenin güncel fiyatı, seçilen kullanım fiyatı, opsiyonun vadesi ve hissenin beklenen oynaklığı. "İçsel değer" sadece kârda olan (ITM) opsiyonlarda bulunur. Hisse hedef fiyata ulaşmamışsa (OTM) opsiyonun tamamen "dışsal değeri" vardır. Volatilite opsiyonu çok etkiler; fiyatı gün içinde sert değişen şirketlerin opsiyonları çok daha pahalıdır.
+            </p>
+          </div>
+
+          <div class="relative p-8 rounded-3xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <div class="relative z-10">
+              <h4 class="font-bold text-xl text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                📊 Gerçek Hayat Örneği: Volatilite Farkı
+              </h4>
+              <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+                Pepsi gibi ağır ve istikrarlı hareket eden düşük oynaklığa sahip bir hissede, çok uzun vadeli (yaklaşık 1,5 yıllık) bir opsiyon kontratı satın aldığınızda ödediğiniz prim, hisse fiyatının yalnızca %5-10'u kadarıdır. 
+              </p>
+              <p class="text-slate-700 dark:text-slate-300 leading-relaxed mt-4">
+                Ancak Tesla gibi fiyatı hızlı artıp düşen şirketlerin çok daha kısa süreli opsiyonları için bile primler hisse bedelinin %13 ila %25'ine kadar ulaşabilir, çünkü satıcı üstlendiği yüksek risk için fahiş fiyat talep eder.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+    </main>
+  </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="relative z-10 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 py-12 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-indigo-600 flex items-center justify-center text-white font-bold font-serif shadow-sm mb-4 text-xl">B</div>
+      <div class="font-serif font-bold text-xl text-slate-900 dark:text-white mb-2">Bora Özkent Academy</div>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mb-6 max-w-md">Bu içerik yalnızca eğitim amaçlıdır. Yatırım tavsiyesi niteliği taşımaz.</p>
+      
+      <div class="flex flex-col gap-4 items-center">
+        <a href="https://www.youtube.com/@boraozkentlenasdaq" target="_blank" class="flex items-center gap-2 px-6 py-2 rounded-full bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/50 transition-colors font-medium text-sm">
+          <svg class="w-5 h-5 text-[#FF0000]" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          YouTube Kanalına Git
+        </a>
+        <div class="text-slate-400 text-xs mt-2">
+          © 2026 Bora Özkent Academy. Tüm Hakları Saklıdır.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Progress Bar
+    const progressBar = document.getElementById('progress-bar');
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      progressBar.style.width = scrolled + '%';
+    }, { passive: true });
+
+    // Table of Contents Active State
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -60% 0px',
+      threshold: 0
+    };
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          document.querySelectorAll('.toc-link').forEach(link => {
+            link.classList.remove('active');
+            if (link.dataset.target === id) {
+              link.classList.add('active');
+            }
+          });
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.lesson-section').forEach(section => {
+      observer.observe(section);
+    });
+
+    // Theme Toggle Logic
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    themeToggleBtn.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      if (document.documentElement.classList.contains('dark')) {
+        localStorage.theme = 'dark';
+      } else {
+        localStorage.theme = 'light';
+      }
+    });
+  </script>
+</body>
+</html>
