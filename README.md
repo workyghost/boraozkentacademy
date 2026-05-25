@@ -1,6 +1,6 @@
 # Opsiyon İşlemleri 101 — Bora Özkent Academy
 
-![Bora Özkent Academy](./bora.jpg)
+![Bora Özkent Academy](./github_banner.png)
 
 Bireyleri ve kurumları geleceğe hazırlayan modern ve etkileşimli finans eğitimi platformu. Karmaşık finans dünyasını günlük hayattan pratik örneklerle 5 kısa derste açıklar.
 
