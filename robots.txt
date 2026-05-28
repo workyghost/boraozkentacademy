@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Allow AI search engines and crawler bots
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+Sitemap: https://bora2.workyghost.com/sitemap.xml
